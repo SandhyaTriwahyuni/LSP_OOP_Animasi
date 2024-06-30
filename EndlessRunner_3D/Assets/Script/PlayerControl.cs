@@ -6,7 +6,7 @@ public class PlayerControl : MonoBehaviour
 {
     private CharacterController _characterController;
     private Vector3 _direction;
-    public float ForwardSpeed; 
+    public float ForwardSpeed;
 
     private int _desiredLane = 1; // 0: Kiri, 1: Tengah, 2: Kanan
     public float LaneDistance = 2.8f;
@@ -18,16 +18,33 @@ public class PlayerControl : MonoBehaviour
     private float swipeRange = 50.0f;
     private bool isSwiping = false;
 
+    public float JumpForce;
+    public float Gravity = -20;
+    private bool isJumping = false;
+
+    private Animator _animator;
+
     // Start is called before the first frame update
     void Start()
     {
         _characterController = GetComponent<CharacterController>();
+        _animator = GetComponent<Animator>(); // Mendapatkan komponen Animator
     }
 
     // Update is called once per frame
     void Update()
     {
         _direction.z = ForwardSpeed;
+        _direction.y += Gravity * Time.deltaTime;
+
+        if (_characterController.isGrounded)
+        {
+            if (isJumping)
+            {
+                isJumping = false;
+ 
+            }
+        }
 
         // Memeriksa input gesekan (swipe)
         SwipeCheck();
@@ -96,8 +113,19 @@ public class PlayerControl : MonoBehaviour
                 }
                 else
                 {
-                    
                     OnSwipeLeft();
+                }
+            }
+            else
+            {
+                // Gesekan ke atas atau ke bawah
+                if (distance.y > 0)
+                {
+                    OnSwipeUp();
+                }
+                else
+                {
+                    OnSwipeDown();
                 }
             }
             ResetSwipe();
@@ -124,5 +152,24 @@ public class PlayerControl : MonoBehaviour
         _desiredLane++;
         if (_desiredLane > 2)
             _desiredLane = 2;
+    }
+
+    // Tindakan ketika gesekan ke atas (untuk melompat)
+    void OnSwipeUp()
+    {
+        Jump();
+    }
+
+    // Tindakan ketika gesekan ke bawah (untuk slide)
+    void OnSwipeDown()
+    {
+        _animator.SetTrigger("Slide"); // Memanggil trigger "Slide" pada Animator
+    }
+
+    private void Jump()
+    {
+        _direction.y = JumpForce;
+        isJumping = true;
+        _animator.SetTrigger("Jump");
     }
 }
