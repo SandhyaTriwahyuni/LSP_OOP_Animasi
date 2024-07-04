@@ -468,7 +468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9020157489621254067, guid: 01b877ac1796d9e4fa66f53305f81f1f, type: 3}
       propertyPath: m_Name
-      value: pCube2 (1)
+      value: Mail_box
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
