@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class StreetManager : MonoBehaviour
 {
@@ -11,11 +12,20 @@ public class StreetManager : MonoBehaviour
 
     private List<GameObject> _activeJalan = new List<GameObject>();
     private Queue<int> _lastSpawnedIndexes = new Queue<int>();
+    private Queue<GameObject> _jalanPool = new Queue<GameObject>();
 
     public Transform PlayerTransform;
 
     void Start()
     {
+        // Initialize the object pool
+        for (int i = 0; i < JalanPrefabs.Length * NumberOfJalan; i++)
+        {
+            GameObject go = Instantiate(JalanPrefabs[i % JalanPrefabs.Length]);
+            go.SetActive(false);
+            _jalanPool.Enqueue(go);
+        }
+
         for (int i = 0; i < NumberOfJalan; i++)
         {
             if (i == 0)
@@ -36,7 +46,10 @@ public class StreetManager : MonoBehaviour
 
     public void SpawnJalan(int JalanIndex)
     {
-        GameObject go = Instantiate(JalanPrefabs[JalanIndex], transform.forward * ZSpawn, transform.rotation);
+        GameObject go = GetPooledJalan(JalanIndex);
+        go.transform.position = transform.forward * ZSpawn;
+        go.transform.rotation = transform.rotation;
+        go.SetActive(true);
         _activeJalan.Add(go);
         ZSpawn += JalanLength;
 
@@ -49,7 +62,9 @@ public class StreetManager : MonoBehaviour
 
     private void DeleteJalan()
     {
-        Destroy(_activeJalan[0]);
+        GameObject go = _activeJalan[0];
+        go.SetActive(false);
+        _jalanPool.Enqueue(go);
         _activeJalan.RemoveAt(0);
     }
 
@@ -61,5 +76,20 @@ public class StreetManager : MonoBehaviour
             randomIndex = Random.Range(0, JalanPrefabs.Length);
         } while (_lastSpawnedIndexes.Contains(randomIndex));
         return randomIndex;
+    }
+
+    private GameObject GetPooledJalan(int JalanIndex)
+    {
+        foreach (GameObject go in _jalanPool)
+        {
+            if (go.name.Contains(JalanPrefabs[JalanIndex].name))
+            {
+                _jalanPool = new Queue<GameObject>(_jalanPool.Where(g => g != go));
+                return go;
+            }
+        }
+        GameObject newGo = Instantiate(JalanPrefabs[JalanIndex]);
+        newGo.SetActive(false);
+        return newGo;
     }
 }

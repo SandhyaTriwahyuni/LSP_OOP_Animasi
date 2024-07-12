@@ -627,7 +627,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 197136, guid: 7999a66b0f0fb2344bbcac6f43822f82, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Obstacle
       objectReference: {fileID: 0}
     - target: {fileID: 498156, guid: 7999a66b0f0fb2344bbcac6f43822f82, type: 3}
       propertyPath: m_LocalPosition.x

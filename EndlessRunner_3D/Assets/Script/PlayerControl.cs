@@ -7,6 +7,7 @@ public class PlayerControl : MonoBehaviour
     private CharacterController _characterController;
     private Vector3 _direction;
     public float ForwardSpeed;
+    public float MaxSpeed;
 
     private int _desiredLane = 1; // 0: Kiri, 1: Tengah, 2: Kanan
     public float LaneDistance = 2.8f;
@@ -17,6 +18,10 @@ public class PlayerControl : MonoBehaviour
 
     private Vector2 startTouchPosition, endTouchPosition;
     private float swipeRange = 50.0f;
+    private float tapRange = 10.0f; // Range to detect a tap
+    private float tapTimeMax = 0.2f; // Maximum time to detect a tap
+    private float tapTime;
+
     private bool isSwiping = false;
 
     public float JumpForce;
@@ -46,6 +51,17 @@ public class PlayerControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!PlayerManager.IsGameStarted)
+            return;
+
+        _animator.SetBool("isStarted", true);
+
+        //IncreaseSpeed
+        if (ForwardSpeed < MaxSpeed)
+        {
+            ForwardSpeed += 0.1f * Time.deltaTime;
+        }
+
         _direction.z = ForwardSpeed;
         _direction.y += Gravity * Time.deltaTime;
 
@@ -78,6 +94,8 @@ public class PlayerControl : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!PlayerManager.IsGameStarted)
+            return;
         Vector3 currentPosition = transform.position;
         Vector3 nextPosition = Vector3.Lerp(currentPosition, _targetPosition, LaneChangeSpeed * Time.deltaTime);
         Vector3 moveDirection = nextPosition - currentPosition;
@@ -85,7 +103,7 @@ public class PlayerControl : MonoBehaviour
         _characterController.Move(moveDirection + _direction * Time.deltaTime);
     }
 
-    // Memeriksa input gesekan (swipe)
+    // Memeriksa input gesekan (swipe) dan tap
     void SwipeCheck()
     {
         if (Input.touchCount > 0)
@@ -96,6 +114,7 @@ public class PlayerControl : MonoBehaviour
             {
                 startTouchPosition = touch.position;
                 isSwiping = true;
+                tapTime = 0; // Added for tap detection
             }
             else if (touch.phase == TouchPhase.Moved && isSwiping)
             {
@@ -104,7 +123,19 @@ public class PlayerControl : MonoBehaviour
             }
             else if (touch.phase == TouchPhase.Ended)
             {
+                endTouchPosition = touch.position;
+                if (isSwiping)
+                {
+                    DetectSwipe();
+                }
+                DetectTap(); // Added for tap detection
                 ResetSwipe();
+            }
+
+            // Increment the tap timer
+            if (isSwiping)
+            {
+                tapTime += Time.deltaTime; // Added for tap detection
             }
         }
     }
@@ -141,6 +172,16 @@ public class PlayerControl : MonoBehaviour
                 }
             }
             ResetSwipe();
+        }
+    }
+
+    void DetectTap() // Added for tap detection
+    {
+        Vector2 distance = endTouchPosition - startTouchPosition;
+
+        if (distance.magnitude < tapRange && tapTime < tapTimeMax)
+        {
+            OnTap();
         }
     }
 
@@ -182,6 +223,13 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
+    // Tindakan ketika tap
+    public void OnTap() // Added for tap detection
+    {
+        // Add your action for tap here
+        Debug.Log("Screen tapped!");
+    }
+
     private void Jump()
     {
         if (_characterController.isGrounded)
@@ -207,5 +255,14 @@ public class PlayerControl : MonoBehaviour
         _characterController.height = _originalHeight; // Kembalikan tinggi CharacterController setelah animasi slide selesai
         _characterController.center = new Vector3(_characterController.center.x, _originalCenterY, _characterController.center.z); // Kembalikan center.y setelah animasi slide selesai
         isSliding = false; // Mengatur flag isSliding menjadi false setelah slide selesai
+    }
+
+    //Ketika Player menabrak Obstacle
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.transform.tag == "Obstacle")
+        {
+            PlayerManager.GameOver = true;
+        }
     }
 }
