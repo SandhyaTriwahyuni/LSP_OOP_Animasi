@@ -14,4 +14,9 @@ public class Events : MonoBehaviour
     {
         SceneManager.LoadScene("MainMenu");
     }
+
+    public void PlayGame()
+    {
+        SceneManager.LoadScene("GamePlay");
+    }
 }

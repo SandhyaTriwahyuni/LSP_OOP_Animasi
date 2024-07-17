@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Obstacle
   - Medicine
+  - Bullet
   layers:
   - Default
   - TransparentFX
