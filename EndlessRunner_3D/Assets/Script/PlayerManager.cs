@@ -7,11 +7,12 @@ public class PlayerManager : MonoBehaviour
     public static bool GameOver;
     public GameObject GameOverPanel;
 
-    //Variabel untuk StartGame
+    // Variabel untuk StartGame
     public static bool IsGameStarted;
     public GameObject StartingText;
 
-    public PlayerControl playerControl; // Make it public
+    public PlayerControl playerControl;
+    public Animator PlayerAnimator;
 
     // Start is called before the first frame update
     void Start()
@@ -26,8 +27,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (GameOver)
         {
-            Time.timeScale = 0;
-            GameOverPanel.SetActive(true);
+            StartCoroutine(GameOverSequence());
         }
 
         // Detect tap to start the game
@@ -37,6 +37,15 @@ public class PlayerManager : MonoBehaviour
             IsGameStarted = true;
             Destroy(StartingText);
         }
+    }
 
+    IEnumerator GameOverSequence()
+    {
+        PlayerAnimator.SetTrigger("Die");
+        // Menunggu hingga animasi "Die" selesai
+        yield return new WaitForSecondsRealtime(2f);
+
+        Time.timeScale = 0;
+        GameOverPanel.SetActive(true);
     }
 }

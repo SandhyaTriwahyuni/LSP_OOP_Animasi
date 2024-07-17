@@ -38,6 +38,15 @@ public class PlayerControl : MonoBehaviour
 
     private bool isSliding = false; // Flag untuk mengecek apakah sedang slide
 
+    //PowerUp
+    public GameObject bulletPrefab;
+    public Transform bulletSpawnPoint;
+    public float bulletSpeed = 20f;
+    public int bulletsToShoot = 8;
+
+    public HealthManager HealthManager;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +55,11 @@ public class PlayerControl : MonoBehaviour
         _initialPosition = transform.position; // Inisialisasi _initialPosition dengan posisi awal
         _originalHeight = _characterController.height; // Menyimpan tinggi awal CharacterController
         _originalCenterY = _characterController.center.y; // Menyimpan nilai awal center.y CharacterController
+
+        HealthManager = FindObjectOfType<HealthManager>();
+
+        // Menjadikan bulletSpawnPoint anak dari Player
+        bulletSpawnPoint.parent = transform;
     }
 
     // Update is called once per frame
@@ -262,7 +276,26 @@ public class PlayerControl : MonoBehaviour
     {
         if (hit.transform.tag == "Obstacle")
         {
-            PlayerManager.GameOver = true;
+            HealthManager.ObstacleHit();
+            _animator.SetTrigger("Stumble");
+            Destroy(hit.gameObject);
+        }
+    }
+    public void ActivatePowerUp()
+    {
+        StartCoroutine(ShootBullets());
+    }
+
+    private IEnumerator ShootBullets()
+    {
+        for (int i = 0; i < bulletsToShoot; i++)
+        {
+            GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+            rb.velocity = bulletSpawnPoint.forward * bulletSpeed;
+
+            yield return new WaitForSeconds(0.1f); // Jeda waktu antara setiap tembakan
+
         }
     }
 }

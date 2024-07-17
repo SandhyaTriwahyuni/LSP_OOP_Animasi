@@ -589,7 +589,7 @@ RectTransform:
   m_Father: {fileID: 2026237337}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0.000015258789, y: -1.5}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.4999999, y: 0.5}
@@ -722,7 +722,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &624958028
 RectTransform:
   m_ObjectHideFlags: 0
@@ -878,6 +878,10 @@ MonoBehaviour:
   Gravity: -20
   NormalHeight: 1.5
   SlideHeight: 1
+  bulletPrefab: {fileID: 3896992875287409027, guid: 19f53d0fe28064d4fa6ea7ded406c757, type: 3}
+  bulletSpawnPoint: {fileID: 0}
+  bulletSpeed: 100
+  bulletsToShoot: 8
 --- !u!4 &640402005 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 0091d038403637144880839d7bcaa09d, type: 3}
@@ -897,8 +901,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HealthBar: {fileID: 301842000}
   MaxHealth: 50
-  HealthDecreaseRate: 1
+  HealthDecreaseRate: 2
   HealthIncreaseAmount: 3
+  ObstacleHitAmount: 10
   Gradient:
     serializedVersion: 2
     key0: {r: 0.7803922, g: 0.12941177, b: 0.3019608, a: 1}

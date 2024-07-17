@@ -10,7 +10,6 @@ public class HealthManager : MonoBehaviour
     private float _currentHealth;
     public float HealthDecreaseRate = 2f;
     public float HealthIncreaseAmount = 3f;
-    public float ObstacleHitAmount = 10f;
     public Gradient Gradient;
     public Image Fill;
 
@@ -60,9 +59,19 @@ public class HealthManager : MonoBehaviour
         UpdateHealthBarColor(); // Perbarui warna slider
     }
 
+    public void EnemyHit()
+    {
+        _currentHealth -= 50f; // Mengurangi health sebesar 50
+        if (_currentHealth < 0)
+        {
+            _currentHealth = 0; // Pastikan health tidak negatif
+        }
+        HealthBar.value = _currentHealth; // Perbarui nilai slider
+        UpdateHealthBarColor(); // Perbarui warna slider
+    }
     public void ObstacleHit()
     {
-        _currentHealth -= ObstacleHitAmount; // Tambahkan health saat ini
+        _currentHealth -= 10f; // Mengurangi health sebesar 50
         if (_currentHealth < 0)
         {
             _currentHealth = 0; // Pastikan health tidak negatif
@@ -85,4 +94,6 @@ public class HealthManager : MonoBehaviour
         // Gunakan nilai normalisasi untuk mengevaluasi gradient
         Fill.color = Gradient.Evaluate(HealthBar.normalizedValue);
     }
+
+
 }
