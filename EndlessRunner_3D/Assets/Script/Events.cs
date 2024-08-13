@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Events : MonoBehaviour
 {
+    [SerializeField] GameObject PauseMenu;
     public void ReplayGame()
     {
         SceneManager.LoadScene("GamePlay");
@@ -15,8 +16,15 @@ public class Events : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
-    public void PlayGame()
+    public void Pause()
     {
-        SceneManager.LoadScene("GamePlay");
+        PauseMenu.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void Resume()
+    {
+        PauseMenu.SetActive(false);
+        Time.timeScale = 1;
     }
 }

@@ -17,7 +17,7 @@ public class PlayerControl : MonoBehaviour
     private Vector3 _initialPosition; // Deklarasi variabel _initialPosition
 
     private Vector2 startTouchPosition, endTouchPosition;
-    private float swipeRange = 50.0f;
+    private float swipeRange = 30.0f;
     private float tapRange = 10.0f; // Range to detect a tap
     private float tapTimeMax = 0.2f; // Maximum time to detect a tap
     private float tapTime;
@@ -25,7 +25,8 @@ public class PlayerControl : MonoBehaviour
     private bool isSwiping = false;
 
     public float JumpForce;
-    public float Gravity = -20;
+    public float MaxJumpForce;
+    public float Gravity = -10;
     private bool isJumping = false;
 
     private Animator _animator;
@@ -45,7 +46,7 @@ public class PlayerControl : MonoBehaviour
     public int bulletsToShoot = 8;
 
     public HealthManager HealthManager;
-
+    public PlayerManager PlayerManager; // Tambahkan referensi ke PlayerManager
 
     // Start is called before the first frame update
     void Start()
@@ -57,6 +58,7 @@ public class PlayerControl : MonoBehaviour
         _originalCenterY = _characterController.center.y; // Menyimpan nilai awal center.y CharacterController
 
         HealthManager = FindObjectOfType<HealthManager>();
+        PlayerManager = FindObjectOfType<PlayerManager>(); // Cari PlayerManager pada scene
 
         // Menjadikan bulletSpawnPoint anak dari Player
         bulletSpawnPoint.parent = transform;
@@ -65,56 +67,68 @@ public class PlayerControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!PlayerManager.IsGameStarted)
-            return;
-
-        _animator.SetBool("isStarted", true);
-
-        //IncreaseSpeed
-        if (ForwardSpeed < MaxSpeed)
+        // Periksa apakah game sudah dimulai dan belum game over
+        if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
         {
-            ForwardSpeed += 0.1f * Time.deltaTime;
-        }
+            _animator.SetBool("isStarted", true);
 
-        _direction.z = ForwardSpeed;
-        _direction.y += Gravity * Time.deltaTime;
-
-        if (_characterController.isGrounded)
-        {
-            if (isJumping)
+            //IncreaseSpeed
+            if (ForwardSpeed < MaxSpeed)
             {
-                isJumping = false;
-                ReturnToRunningAnimation();
+                ForwardSpeed += 0.1f * Time.deltaTime;
             }
+
+            if (JumpForce < MaxJumpForce)
+            {
+                JumpForce += 0.001f * Time.deltaTime;
+            }
+
+            _direction.z = ForwardSpeed;
+            _direction.y += Gravity * Time.deltaTime;
+
+            if (_characterController.isGrounded)
+            {
+                if (isJumping)
+                {
+                    isJumping = false;
+                    ReturnToRunningAnimation();
+                }
+            }
+
+            // Memeriksa input gesekan (swipe)
+            SwipeCheck();
+
+            // Menghitung posisi target berdasarkan jalur yang diinginkan
+            Vector3 lanePosition = transform.position.z * transform.forward + transform.position.y * transform.up;
+
+            if (_desiredLane == 0)
+            {
+                lanePosition += Vector3.left * LaneDistance;
+            }
+            else if (_desiredLane == 2)
+            {
+                lanePosition += Vector3.right * LaneDistance;
+            }
+
+            _targetPosition = new Vector3(lanePosition.x, transform.position.y, transform.position.z);
         }
-
-        // Memeriksa input gesekan (swipe)
-        SwipeCheck();
-
-        // Menghitung posisi target berdasarkan jalur yang diinginkan
-        Vector3 lanePosition = transform.position.z * transform.forward + transform.position.y * transform.up;
-
-        if (_desiredLane == 0)
+        else
         {
-            lanePosition += Vector3.left * LaneDistance;
+            // Game over atau belum dimulai, hentikan pergerakan
+            _direction.z = 0;
         }
-        else if (_desiredLane == 2)
-        {
-            lanePosition += Vector3.right * LaneDistance;
-        }
-
-        _targetPosition = new Vector3(lanePosition.x, transform.position.y, transform.position.z);
     }
 
     private void FixedUpdate()
     {
-        if (!PlayerManager.IsGameStarted)
-            return;
-        Vector3 currentPosition = transform.position;
-        Vector3 nextPosition = Vector3.Lerp(currentPosition, _targetPosition, LaneChangeSpeed * Time.deltaTime);
-        Vector3 moveDirection = nextPosition - currentPosition;
+        if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
+        {
+            Vector3 currentPosition = transform.position;
+            Vector3 nextPosition = Vector3.Lerp(currentPosition, _targetPosition, LaneChangeSpeed * Time.deltaTime);
+            Vector3 moveDirection = nextPosition - currentPosition;
 
-        _characterController.Move(moveDirection + _direction * Time.deltaTime);
+            _characterController.Move(moveDirection + _direction * Time.deltaTime);
+        }
     }
 
     // Memeriksa input gesekan (swipe) dan tap
@@ -208,49 +222,68 @@ public class PlayerControl : MonoBehaviour
     // Tindakan ketika gesekan ke kiri
     void OnSwipeLeft()
     {
-        _desiredLane--;
-        if (_desiredLane < 0)
-            _desiredLane = 0;
+        if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
+        {
+            _desiredLane--;
+            if (_desiredLane < 0)
+                _desiredLane = 0;
+        }
     }
 
     // Tindakan ketika gesekan ke kanan
     void OnSwipeRight()
     {
-        _desiredLane++;
-        if (_desiredLane > 2)
-            _desiredLane = 2;
+        if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
+        {
+            _desiredLane++;
+            if (_desiredLane > 2)
+                _desiredLane = 2;
+        }
     }
 
     // Tindakan ketika gesekan ke atas (untuk melompat)
     void OnSwipeUp()
     {
-        Jump();
+        if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
+        {
+            Jump();
+        }
     }
 
     // Tindakan ketika gesekan ke bawah (untuk slide)
     void OnSwipeDown()
     {
-        if (!isSliding)
+        if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
         {
-            _animator.SetTrigger("Slide"); // Memanggil trigger "Slide" pada Animator
-            StartCoroutine(SlideCoroutine());
+            if (!isSliding)
+            {
+                _animator.SetTrigger("Slide"); // Memanggil trigger "Slide" pada Animator
+                StartCoroutine(SlideCoroutine());
+            }
         }
     }
 
     // Tindakan ketika tap
     public void OnTap() // Added for tap detection
     {
-        // Add your action for tap here
-        Debug.Log("Screen tapped!");
+        //if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
+        {
+         
+        }
     }
 
     private void Jump()
     {
-        if (_characterController.isGrounded)
+        if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
         {
-            _direction.y = JumpForce;
-            isJumping = true;
-            _animator.SetTrigger("Jump");
+            if (_characterController.isGrounded)
+            {
+                _direction.y = JumpForce;
+                isJumping = true;
+                _animator.SetTrigger("Jump");
+            }
+
+            
         }
     }
 
@@ -262,13 +295,16 @@ public class PlayerControl : MonoBehaviour
 
     private IEnumerator SlideCoroutine()
     {
-        isSliding = true; // Mengatur flag isSliding menjadi true
-        _characterController.height = SlideHeight; // Ubah tinggi CharacterController saat slide
-        _characterController.center = new Vector3(_characterController.center.x, 0.4f, _characterController.center.z); // Ubah center.y saat slide
-        yield return new WaitForSeconds(_animator.GetCurrentAnimatorStateInfo(0).length); // Tunggu hingga animasi slide selesai
-        _characterController.height = _originalHeight; // Kembalikan tinggi CharacterController setelah animasi slide selesai
-        _characterController.center = new Vector3(_characterController.center.x, _originalCenterY, _characterController.center.z); // Kembalikan center.y setelah animasi slide selesai
-        isSliding = false; // Mengatur flag isSliding menjadi false setelah slide selesai
+        if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
+        {
+            isSliding = true; // Mengatur flag isSliding menjadi true
+            _characterController.height = SlideHeight; // Ubah tinggi CharacterController saat slide
+            _characterController.center = new Vector3(_characterController.center.x, 0.4f, _characterController.center.z); // Ubah center.y saat slide
+            yield return new WaitForSeconds(_animator.GetCurrentAnimatorStateInfo(0).length); // Tunggu hingga animasi slide selesai
+            _characterController.height = _originalHeight; // Kembalikan tinggi CharacterController setelah animasi slide selesai
+            _characterController.center = new Vector3(_characterController.center.x, _originalCenterY, _characterController.center.z); // Kembalikan center.y setelah animasi slide selesai
+            isSliding = false; // Mengatur flag isSliding menjadi false setelah slide selesai
+        }
     }
 
     //Ketika Player menabrak Obstacle
@@ -276,14 +312,20 @@ public class PlayerControl : MonoBehaviour
     {
         if (hit.transform.tag == "Obstacle")
         {
-            HealthManager.ObstacleHit();
-            _animator.SetTrigger("Stumble");
-            Destroy(hit.gameObject);
+            if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
+            {
+                HealthManager.ObstacleHit();
+                Destroy(hit.gameObject);
+            }
         }
     }
+
     public void ActivatePowerUp()
     {
-        StartCoroutine(ShootBullets());
+        if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
+        {
+            StartCoroutine(ShootBullets());
+        }
     }
 
     private IEnumerator ShootBullets()
@@ -295,7 +337,6 @@ public class PlayerControl : MonoBehaviour
             rb.velocity = bulletSpawnPoint.forward * bulletSpeed;
 
             yield return new WaitForSeconds(0.1f); // Jeda waktu antara setiap tembakan
-
         }
     }
 }

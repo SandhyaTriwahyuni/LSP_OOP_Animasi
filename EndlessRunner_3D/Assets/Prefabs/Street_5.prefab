@@ -544,6 +544,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Barrier (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 7742712745558087996, guid: 4d07dd3fbd8acd14c85fdab4eb6593eb, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1055,6 +1059,10 @@ PrefabInstance:
     - target: {fileID: 7742712745558087996, guid: 4d07dd3fbd8acd14c85fdab4eb6593eb, type: 3}
       propertyPath: m_Name
       value: Barrier (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7742712745558087996, guid: 4d07dd3fbd8acd14c85fdab4eb6593eb, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

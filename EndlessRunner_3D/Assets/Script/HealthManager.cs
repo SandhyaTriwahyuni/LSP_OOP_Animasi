@@ -30,11 +30,6 @@ public class HealthManager : MonoBehaviour
         {
             DecreaseHealth(); // Kurangi health saat game sudah dimulai dan belum game over
         }
-
-        if (_currentHealth == 0)
-        {
-            PlayerManager.GameOver = true;
-        }
     }
 
     void DecreaseHealth()
@@ -43,6 +38,7 @@ public class HealthManager : MonoBehaviour
         if (_currentHealth < 0)
         {
             _currentHealth = 0; // Pastikan health tidak negatif
+            PlayerManager.GameOver = true; // Aktifkan game over jika health mencapai 0
         }
         HealthBar.value = _currentHealth; // Perbarui nilai slider
         UpdateHealthBarColor(); // Perbarui warna slider
@@ -50,13 +46,17 @@ public class HealthManager : MonoBehaviour
 
     public void IncreaseHealth()
     {
-        _currentHealth += HealthIncreaseAmount; // Tambahkan health saat ini
-        if (_currentHealth > MaxHealth)
+        // Hanya izinkan peningkatan kesehatan jika game belum berakhir
+        if (!PlayerManager.GameOver)
         {
-            _currentHealth = MaxHealth; // Pastikan health tidak melebihi maksimum
+            _currentHealth += HealthIncreaseAmount; // Tambahkan health saat ini
+            if (_currentHealth > MaxHealth)
+            {
+                _currentHealth = MaxHealth; // Pastikan health tidak melebihi maksimum
+            }
+            HealthBar.value = _currentHealth; // Perbarui nilai slider
+            UpdateHealthBarColor(); // Perbarui warna slider
         }
-        HealthBar.value = _currentHealth; // Perbarui nilai slider
-        UpdateHealthBarColor(); // Perbarui warna slider
     }
 
     public void EnemyHit()
@@ -65,16 +65,19 @@ public class HealthManager : MonoBehaviour
         if (_currentHealth < 0)
         {
             _currentHealth = 0; // Pastikan health tidak negatif
+            PlayerManager.GameOver = true; // Aktifkan game over jika health mencapai 0
         }
         HealthBar.value = _currentHealth; // Perbarui nilai slider
         UpdateHealthBarColor(); // Perbarui warna slider
     }
+
     public void ObstacleHit()
     {
-        _currentHealth -= 10f; // Mengurangi health sebesar 50
+        _currentHealth -= 10f; // Mengurangi health sebesar 10
         if (_currentHealth < 0)
         {
             _currentHealth = 0; // Pastikan health tidak negatif
+            PlayerManager.GameOver = true; // Aktifkan game over jika health mencapai 0
         }
         HealthBar.value = _currentHealth; // Perbarui nilai slider
         UpdateHealthBarColor(); // Perbarui warna slider
@@ -94,6 +97,4 @@ public class HealthManager : MonoBehaviour
         // Gunakan nilai normalisasi untuk mengevaluasi gradient
         Fill.color = Gradient.Evaluate(HealthBar.normalizedValue);
     }
-
-
 }

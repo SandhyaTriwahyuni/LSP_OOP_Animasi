@@ -6,6 +6,8 @@ public class PlayerManager : MonoBehaviour
 {
     public static bool GameOver;
     public GameObject GameOverPanel;
+    public GameObject HUD;
+    public ScoreSystem ScoreSystem;
 
     // Variabel untuk StartGame
     public static bool IsGameStarted;
@@ -46,6 +48,11 @@ public class PlayerManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(2f);
 
         Time.timeScale = 0;
+        HUD.SetActive(false);
         GameOverPanel.SetActive(true);
+        if (ScoreSystem != null)
+        {
+            ScoreSystem.DisplayGameOverScore();
+        }
     }
 }
