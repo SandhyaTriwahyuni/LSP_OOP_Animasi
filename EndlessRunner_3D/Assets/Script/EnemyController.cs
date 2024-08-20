@@ -60,6 +60,7 @@ public class EnemyController : MonoBehaviour
     {
         _isDead = true;
         _animator.SetTrigger("Die");
+        SoundManager.Instance.PlaySound3D("Hit", transform.position);
         Destroy(gameObject, 2f); // Menghapus game object setelah animasi mati
     }
 

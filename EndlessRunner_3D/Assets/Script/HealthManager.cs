@@ -62,6 +62,7 @@ public class HealthManager : MonoBehaviour
     public void EnemyHit()
     {
         _currentHealth -= 50f; // Mengurangi health sebesar 50
+        SoundManager.Instance.PlaySound3D("Die", transform.position);
         if (_currentHealth < 0)
         {
             _currentHealth = 0; // Pastikan health tidak negatif
@@ -74,6 +75,7 @@ public class HealthManager : MonoBehaviour
     public void ObstacleHit()
     {
         _currentHealth -= 10f; // Mengurangi health sebesar 10
+        SoundManager.Instance.PlaySound3D("Die", transform.position);
         if (_currentHealth < 0)
         {
             _currentHealth = 0; // Pastikan health tidak negatif
@@ -88,6 +90,8 @@ public class HealthManager : MonoBehaviour
         if (other.CompareTag("Medicine"))
         {
             IncreaseHealth();
+            //mainkan sound poin
+            SoundManager.Instance.PlaySound3D("Poin",transform.position);
             Destroy(other.gameObject); // Hapus obat setelah dikumpulkan
         }
     }

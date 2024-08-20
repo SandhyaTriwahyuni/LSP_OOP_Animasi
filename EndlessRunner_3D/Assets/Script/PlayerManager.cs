@@ -46,6 +46,7 @@ public class PlayerManager : MonoBehaviour
         PlayerAnimator.SetTrigger("Die");
         // Menunggu hingga animasi "Die" selesai
         yield return new WaitForSecondsRealtime(2f);
+        SoundManager.Instance.PlaySound2D("GameOver");
 
         Time.timeScale = 0;
         HUD.SetActive(false);

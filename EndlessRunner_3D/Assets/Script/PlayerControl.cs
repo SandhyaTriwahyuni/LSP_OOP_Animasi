@@ -17,7 +17,7 @@ public class PlayerControl : MonoBehaviour
     private Vector3 _initialPosition; // Deklarasi variabel _initialPosition
 
     private Vector2 startTouchPosition, endTouchPosition;
-    private float swipeRange = 30.0f;
+    private float swipeRange = 50.0f;
     private float tapRange = 10.0f; // Range to detect a tap
     private float tapTimeMax = 0.2f; // Maximum time to detect a tap
     private float tapTime;
@@ -26,6 +26,7 @@ public class PlayerControl : MonoBehaviour
 
     public float JumpForce;
     public float MaxJumpForce;
+
     public float Gravity = -10;
     private bool isJumping = false;
 
@@ -80,7 +81,7 @@ public class PlayerControl : MonoBehaviour
 
             if (JumpForce < MaxJumpForce)
             {
-                JumpForce += 0.001f * Time.deltaTime;
+                JumpForce += 0.01f * Time.deltaTime;
             }
 
             _direction.z = ForwardSpeed;
@@ -171,10 +172,12 @@ public class PlayerControl : MonoBehaviour
     // Mendeteksi gesekan (swipe)
     void DetectSwipe()
     {
+        
         Vector2 distance = endTouchPosition - startTouchPosition;
 
         if (distance.magnitude > swipeRange)
         {
+            SoundManager.Instance.PlaySound3D("swipe", transform.position);
             if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
             {
                 // Gesekan ke kiri atau ke kanan
@@ -315,6 +318,7 @@ public class PlayerControl : MonoBehaviour
             if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
             {
                 HealthManager.ObstacleHit();
+                _animator.SetTrigger("Stumble");
                 Destroy(hit.gameObject);
             }
         }
@@ -325,6 +329,7 @@ public class PlayerControl : MonoBehaviour
         if (PlayerManager.IsGameStarted && !PlayerManager.GameOver)
         {
             StartCoroutine(ShootBullets());
+            SoundManager.Instance.PlaySound3D("Shoot", transform.position);
         }
     }
 
