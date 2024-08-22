@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class SoundManager : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class SoundManager : MonoBehaviour
 
     [SerializeField]
     private SoundLibrary sfxLibrary;
+
+    [SerializeField]
+    private AudioMixerGroup sfxMixerGroup; // Add this to assign SFX group
 
     private void Awake()
     {
@@ -30,6 +34,7 @@ public class SoundManager : MonoBehaviour
             AudioSource source = AudioSourcePool.Instance.GetAudioSource();
             source.transform.position = pos;
             source.clip = clip;
+            source.outputAudioMixerGroup = sfxMixerGroup; // Set to SFX mixer group
             source.Play();
             StartCoroutine(ReturnSourceToPool(source, clip.length));
         }
@@ -43,6 +48,7 @@ public class SoundManager : MonoBehaviour
             AudioSource source = AudioSourcePool.Instance.GetAudioSource();
             source.transform.position = Camera.main.transform.position;
             source.clip = clip;
+            source.outputAudioMixerGroup = sfxMixerGroup; // Set to SFX mixer group
             source.Play();
             StartCoroutine(ReturnSourceToPool(source, clip.length));
         }
