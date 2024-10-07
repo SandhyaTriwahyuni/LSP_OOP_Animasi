@@ -2732,7 +2732,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1808167840172635967, guid: 61b8e0869e367e54a935f0ebb7f4c581, type: 3}
       propertyPath: soundEffects.Array.data[5].clips.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1808167840172635967, guid: 61b8e0869e367e54a935f0ebb7f4c581, type: 3}
       propertyPath: soundEffects.Array.data[2].clips.Array.data[0]
@@ -3198,17 +3198,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1592970845 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4934933505751649183, guid: b8ab037719d658b4f97e040e84dae098, type: 3}
-  m_PrefabInstance: {fileID: 1378072365785836161}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c4eaf1e33c80db40b27edf5c4915dbe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1635101130
 GameObject:
   m_ObjectHideFlags: 0
@@ -4583,14 +4572,6 @@ PrefabInstance:
       propertyPath: bulletPrefab
       value: 
       objectReference: {fileID: 1843503115685091149, guid: 7f62d4f42edc34c4aa717ba6739f248f, type: 3}
-    - target: {fileID: 5520474887569370821, guid: b8ab037719d658b4f97e040e84dae098, type: 3}
-      propertyPath: HealthManager
-      value: 
-      objectReference: {fileID: 1592970845}
-    - target: {fileID: 5520474887569370821, guid: b8ab037719d658b4f97e040e84dae098, type: 3}
-      propertyPath: PlayerManager
-      value: 
-      objectReference: {fileID: 1209428438}
     - target: {fileID: 5520474887569370821, guid: b8ab037719d658b4f97e040e84dae098, type: 3}
       propertyPath: bulletSpawnPoint
       value: 
